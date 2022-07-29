@@ -101,11 +101,11 @@ def ventana_login():
     labelPass.grid(column=0, row=2, sticky='nswe', padx=3)
 
     # Entry de la VentanaInicio
-    entryUser = Entry(frm_panel_login, width=27, relief='flat')
+    entryUser = Entry(frm_panel_login, width=27, relief='flat', textvariable=user)
     entryUser.grid(column=0, row=1, padx=3, sticky='nswe')
     entryUser.focus()
 
-    entryPass = Entry(frm_panel_login, show="*", width=27, relief='flat')
+    entryPass = Entry(frm_panel_login, show="*", width=27, relief='flat', textvariable=password)
     entryPass.grid(column=0, row=3, padx=3, sticky='nswe')
 
     # Botones de la ventanaInicio
