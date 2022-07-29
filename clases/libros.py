@@ -3,12 +3,14 @@ from clases.conectar import Conectar
 
 
 class Libro:
-    def __init__(self, codigo=0, nombre="", autor="", categoria=0, stock=0) -> None:
+    def __init__(self, codigo=0, nombre="", autor="", categoria=0, stock=0, editorial=0, bodega=0) -> None:
         self.__codigo = codigo
         self.__nombre = nombre
         self.__autor = autor
         self.__categoria = categoria
         self.__stock = stock
+        self.__bodega = bodega
+        self.__editorial = editorial
         self.__conectar = Conectar()
 
     @property

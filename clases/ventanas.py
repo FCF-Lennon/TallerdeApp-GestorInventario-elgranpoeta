@@ -1,10 +1,16 @@
 from cProfile import label
+from sqlite3 import Cursor
 from struct import pack
 from tkinter import *
 from tkinter import messagebox
+
+from mysqlx import Column
 from clases.libros import Libro
 from clases.usuario import Usuario
 from clases.categoria import Categoria
+from clases.editorial import Editorial
+from clases.bodega import Bodega
+
 from tkinter import ttk
 from tkinter import messagebox as Messagebox
 
@@ -43,51 +49,150 @@ def ventana_login():
         except:
             Messagebox.showerror("Error", "Usuario no encontrado")
 
+    def ocultarInfo():
+        frm_two.grid_forget()
+    
+    def mostrarInfo():
+        frm_two.grid(column=1,row=0, sticky='nsew')
+        
+
     # Instanciación de la ventqna de inicio de sesión
     ventanaInicio = Tk()
-    ventanaInicio.title("Inicio de Sesión")
-    ventanaInicio.geometry("300x300")
+    ventanaInicio.title("El gran poeta")
+    ventanaInicio.configure(background = '#ec7225')
+    ventanaInicio.eval('tk::PlaceWindow . center')
+    ventanaInicio.iconbitmap("img/logo.ico")
     ventanaInicio.resizable(0, 0)
 
     # Instanciación de Variables
     user = StringVar()
     password = StringVar()
 
+    # Frames de la ventana de inicio de sesión
+
+    frm_one = Frame(ventanaInicio, bg = '#ec7225')
+    frm_one.grid(column=0, row=0, pady=2)
+
+    frm_help = Frame(frm_one, bg='white')
+    frm_help.pack(fill='x')
+
+    frm_logo = Frame(frm_one, bg = '#ec7225')
+    frm_logo.pack()
+
+    frm_login = Frame(frm_one, bg = '#ec7225')
+    frm_login.pack(expand=True, fill='x')
+
+    frm_panel_login = LabelFrame(frm_login, text="Login", bg='#ec7225', fg='white', font=("Arial", 20))
+    frm_panel_login.pack(expand=True, fill='x', padx=20, ipady=3)
+
+    frm_button = Frame(frm_login, bg='#ec7225')
+    frm_button.pack(expand=True, fill='x') 
+
     # Label de la ventanaInicio
-    labelInicioSesion = Label(text="Inicio de Sesión")
-    labelInicioSesion.config(font=('Arial', 20, 'bold'))
-    labelInicioSesion.pack()
 
-    labelUser = Label(text="Usuario")
-    labelUser.config(font=('Arial', 15, 'bold'))
-    labelUser.place(x=150, y=50, anchor=CENTER)
+    logo = PhotoImage(file=("Img/logo150x150.png"))
+    lbl__logo = Label(frm_logo, image=logo, bg='#ec7225')
+    lbl__logo.grid(column=0, row=0, pady=5)
 
-    labelPass = Label(text="Contraseña")
-    labelPass.config(font=('Arial', 15, 'bold'))
-    labelPass.place(x=150, y=150, anchor=CENTER)
+    labelUser = Label(frm_panel_login, text="Usuario", anchor="w", bg='#ec7225', fg='white') 
+    labelUser.grid(column=0, row=0, sticky='nswe', padx=3)
+
+    labelPass = Label(frm_panel_login, text="Contraseña", bg='#ec7225', anchor="w", fg='white')
+    labelPass.grid(column=0, row=2, sticky='nswe', padx=3)
 
     # Entry de la VentanaInicio
-    entryUser = Entry(textvariable=user)
-    entryUser.place(x=150, y=100, anchor=CENTER)
+    entryUser = Entry(frm_panel_login, width=27, relief='flat')
+    entryUser.grid(column=0, row=1, padx=3, sticky='nswe')
+    entryUser.focus()
 
-    entryPass = Entry(textvariable=password, show="*")
-    entryPass.place(x=150, y=200, anchor=CENTER)
+    entryPass = Entry(frm_panel_login, show="*", width=27, relief='flat')
+    entryPass.grid(column=0, row=3, padx=3, sticky='nswe')
 
     # Botones de la ventanaInicio
-
     # Este boton llama a la funcion validar
-    botonLogin = Button(text='Continuar', command=validar)
-    botonLogin.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                      bg='#1658A2', cursor='hand2', activebackground='#3586DF')
-    botonLogin.place(x=100, y=250, anchor=CENTER)
+    btn_help = Button(
+        frm_help, 
+        text='Mesa de Ayuda', 
+        height=1, 
+        border=0, 
+        bg='white', 
+        fg= '#515a5a', 
+        activeforeground='#ec7225',
+        activebackground='white',
+        cursor='hand2',
+        command=mostrarInfo)
+    btn_help.pack(side=RIGHT, padx=2)
 
-    # Este boton termina la ejecucion del programa
-    botonCancelar = Button(text="Cancelar", command=ventanaInicio.destroy)
-    botonCancelar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                         bg='#BD152E', cursor='hand2', activebackground='#E15370')
-    botonCancelar.place(x=200, y=250, anchor=CENTER)
+    botonLogin = Button(frm_button, text='LOG IN', command=validar, width=24, cursor='hand2')
+    botonLogin.config(
+        relief=GROOVE, 
+        height=1,
+        border=0, 
+        cursor='hand2',
+        bg='#515a5a', 
+        fg='white',
+        activebackground='white',
+        activeforeground='#ec7225')
+    botonLogin.pack(pady=8, padx=20)
+
+    ''' FRAME -------------- '''
+
+    frm_two = Frame(ventanaInicio, bg='white')
+    frm_two.grid_forget()
+
+    frm_Registrar = Frame(frm_two, bg='white')
+    frm_Registrar.pack(expand=True, fill=BOTH, padx=20)
+
+    frm_btn_volver = Frame(frm_two, bg='white', width=24)
+    frm_btn_volver.pack(expand=True, fill=BOTH, padx=20)
 
     # Con esto mantenemos en ciclo a la  ventana
+
+    ''' LABEL INFOMACION -------------- '''
+
+    lbl_Informacion = Label(frm_Registrar, text='Información:', font = ('Arial', 20), anchor='w', bg='white', fg= '#ec7225', cursor='hand2')
+    lbl_Informacion.grid(column=0, row=0, sticky='we')
+
+    lbl_info_one = Label(frm_Registrar, text='Apertura de Cuenta:', anchor='w', bg='white', fg= '#515a5a')
+    lbl_info_one.grid(column=0, row=1, sticky='w')
+    lbl_info_one_sms = Label(frm_Registrar, width=24, relief='flat', bg='#f0f0f0', text='llamar a 800 600 5526', fg='#515a5a')
+    lbl_info_one_sms.grid(column=0, row=2)
+
+    lbl_info_two = Label(frm_Registrar, text='Recuperar Contraseña:', anchor='w', bg='white', fg= '#515a5a')
+    lbl_info_two.grid(column=0, row=3, sticky='w')
+    lbl_info_two_sms = Label(frm_Registrar, width=24, relief='flat', bg='#f0f0f0', text= 'llamar a 800 600 5528 ', fg= '#515a5a')
+    lbl_info_two_sms.grid(column=0, row=4)
+
+    lbl_info_three = Label(frm_Registrar, text='Cuenta Bloqueda:', anchor='w', bg='white', fg= '#515a5a')
+    lbl_info_three.grid(column=0, row=5, sticky='w')
+    lbl_info_three_sms = Label(frm_Registrar, width=24, relief='flat', bg='#f0f0f0', text= 'llamar a 800 600 5530 ', fg= '#515a5a')
+    lbl_info_three_sms.grid(column=0, row=6)
+
+    lbl_info_four = Label(frm_Registrar, text='Para Soporte:', anchor='w', bg='white', fg= '#515a5a')
+    lbl_info_four.grid(column=0, row=7, sticky='w')
+    lbl_info_four_sms_one = Label(frm_Registrar, width=24, relief='flat', bg='#f0f0f0', text='llamar a 800 600 5532', fg= '#515a5a')
+    lbl_info_four_sms_one.grid(column=0, row=8)
+
+    lbl_info_email = Label(frm_Registrar, text='Email:', anchor='w', bg='white', fg= '#515a5a')
+    lbl_info_email.grid(column=0, row=9, sticky='w')
+    lbl_info_three_sms_three = Label(frm_Registrar, width=24, relief='flat', bg='#f0f0f0', text='mesadeayuda@elgranpoeta.cl', fg= '#ec7225')
+    lbl_info_three_sms_three.grid(column=0, row=10)
+
+    ''' BUTTON -------------- '''
+
+    btn_volver= Button(
+        frm_btn_volver, 
+        text='<< volver', 
+        relief=GROOVE, 
+        bg='#515a5a',
+        fg='white', 
+        border=0,
+        cursor='hand2', 
+        command=ocultarInfo,
+        activebackground='#ec7225',
+        activeforeground='white')
+    btn_volver.grid(column=1, row=0, sticky='w', ipadx=6)
+
     ventanaInicio.mainloop()
 
 
@@ -100,6 +205,8 @@ def ventanaMain():
         autor.set("")
         stock.set("")
         categoria.set("")
+        editorial.set("")
+        bodega.set("")
     # Equipo de contruccion
 
     def bobContructor():
@@ -156,9 +263,6 @@ def ventanaMain():
         ventana_main.destroy()
         ventana_login()
 
-    def actualizar():
-        frmCRUDLibros()
-
     # Frames del menu de opciones
     def frmCRUDLibros():
         desactivar()
@@ -197,12 +301,14 @@ def ventanaMain():
         try:
             resultado = categoria.get().split(sep=" ")
             Catid = resultado[0]
-            libro = Libro(codigo, nombre.get(),
-                          autor.get(), Catid, stock.get())
-            mensaje = libro.insertarLibro()
-            if mensaje:
-                messagebox.showinfo("Registrado", mensaje)
-                conserje()
+            #Valida que el nombre no pase 70 caracteres
+            if len(nombre.get()) < 70:
+                libro = Libro(codigo, nombre.get(),
+                            autor.get(), Catid, stock.get(),editorial(),bodega())
+                mensaje = libro.insertarLibro()
+                if mensaje:
+                    messagebox.showinfo("Registrado", mensaje)
+                    conserje()
         except:
             messagebox.showerror("Error", "Debe ingresar datos válidos.")
 
@@ -211,7 +317,7 @@ def ventanaMain():
             resultado = categoria.get().split(sep=" ")
             Catid = resultado[0]
             libro = Libro(codigo.get(), nombre.get(),
-                          autor.get(), Catid, stock.get())
+                          autor.get(), Catid, stock.get(),editorial(),bodega())
             mensaje = libro.editarLibro()
             if mensaje:
                 messagebox.showinfo("Editado", mensaje)
@@ -227,6 +333,8 @@ def ventanaMain():
             nombre_libro = tabla.item(tabla.selection())['values'][2]
             autor_libro = tabla.item(tabla.selection())['values'][3]
             stock_libro = tabla.item(tabla.selection())['values'][4]
+            editorial_libro = tabla.item(tabla.selection())['values'][5]
+            bodega_libro = tabla.item(tabla.selection())['values'][6]
 
             habilitar()
             botonRegistrar.config(state='disabled')
@@ -238,6 +346,8 @@ def ventanaMain():
             entryNombre.insert(0, nombre_libro)
             entryAutor.insert(0, autor_libro)
             entryStock.insert(0, stock_libro)
+            entryEditorial.insert(0, editorial_libro)
+            entryBodega.insert(0, bodega_libro)
             comboBoxCategoria.set(categoria_libro)
         except:
             pass
@@ -257,6 +367,8 @@ def ventanaMain():
         entryNombre.config(state='normal')
         entryAutor.config(state='normal')
         entryStock.config(state='normal')
+        entryEditorial.config(state='normal')
+        entryBodega.config(state='normal')
         comboBoxCategoria.config(state='readonly')
 
         botonRegistrar.config(state='normal')
@@ -269,6 +381,8 @@ def ventanaMain():
         entryNombre.config(state='disabled')
         entryAutor.config(state='disabled')
         entryStock.config(state='disabled')
+        entryEditorial.config(state='disabled')
+        entryBodega.config(state='disabled')
         comboBoxCategoria.config(state='disabled')
 
         botonRegistrar.config(state='disabled')
@@ -287,6 +401,8 @@ def ventanaMain():
                 autor.set(l[2])
                 stock.set(l[3])
                 categoria.set(l[4])
+                editorial.set(1[5])
+                bodega.set(1[6])
         except:
             messagebox.showerror("Error", "No se pudo encontrar el libro.")
             conserje()
@@ -323,6 +439,8 @@ def ventanaMain():
     nombre = StringVar()
     autor = StringVar()
     stock = StringVar()
+    editorial = StringVar()
+    bodega = StringVar()
 
     # Frame para listar los libros
     frameListar = Frame(ventana_main)
@@ -335,13 +453,16 @@ def ventanaMain():
     scroll.grid(row=5, column=5, sticky='nse')
     tabla.config(yscrollcommand=scroll.set)
 
-    tabla["columns"] = ("Codigo", "Categoria", "Nombre", "Autor", "Stock")
+    tabla["columns"] = ("Codigo", "Categoria", "Nombre",
+                        "Autor", "Stock", "Editorial")
     tabla.column("#0", width=0, stretch=NO)
     tabla.heading("Codigo", text="Codigo", anchor=CENTER)
     tabla.heading("Categoria", text="Categoria", anchor=CENTER)
     tabla.heading("Nombre", text="Nombre", anchor=CENTER)
     tabla.heading("Autor", text="Autor", anchor=CENTER)
     tabla.heading("Stock", text="Stock", anchor=CENTER)
+    tabla.heading("Editorial", text="Editorial", anchor=CENTER)
+    tabla.heading("Bodegas", text="Bodegas", anchor=CENTER)
 
     # Botones del frameTabla
 
@@ -356,7 +477,7 @@ def ventanaMain():
     botonEditar.grid(column=1, row=7, sticky="nwe", pady=5, padx=5)
 
     botonActualizar = Button(
-        frameTabla, text='Actualizar Tabla', command=actualizar)
+        frameTabla, text='Actualizar Tabla', command=frmCRUDLibros())
     botonActualizar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
                            bg='#1658A2', cursor='hand2', activebackground='#3586DF')
     botonActualizar.grid(column=2, row=7, sticky="nwe", pady=5, padx=5)
@@ -396,6 +517,15 @@ def ventanaMain():
     labelCategoria.config(font=('Arial', 12, 'bold'))
     labelCategoria.grid(column=4, row=0, pady=5, padx=5, sticky="w")
 
+    labelEditorial = Label(frmForm, text="Editorial")
+    labelEditorial.config(font=('Arial', 12, 'bold'))
+    labelEditorial.grid(column=5, row=0, pady=5, padx=5, sticky="w")
+
+    labelBodegas = Label(frmForm, text="Bodegas")
+    labelBodegas.config(font=('Arial', 12, 'bold'))
+    labelBodegas.grid(column=6, row=0, pady=5, padx=5, sticky="w")
+
+
     # Entry del Frame frmForm
     entryCodigo = Entry(frmForm, textvariable=codigo)
     entryCodigo.grid(column=0, row=1, pady=5, padx=5)
@@ -409,10 +539,31 @@ def ventanaMain():
     entryStock = Entry(frmForm, textvariable=stock)
     entryStock.grid(column=3, row=1, pady=5, padx=5)
 
+    entryEditorial = Entry(frmForm, textvariable=editorial)
+    entryEditorial.grid(column=4, row=1, pady=5, padx=5)
+
+    entryBodega = Entry(frmForm, textvariable=bodega)
+    entryBodega.grid(column=5, row=1, pady=5, padx=5)
+
     # Instancia de la clase Categoria
     c = Categoria()
     # Lista de generos para el comboBoxCategoria
     lista = c.listarCategorias()
+
+    # Instancia de la clase Editorial
+    e = Editorial()
+    # Lista de generos para el comboBoxEditorial
+    listas = e.listarEditorial()
+
+    # Combobox del Frame frmForm
+    comboBoxEditorial = ttk.Combobox(
+        frmForm, values=listas, textvariable=editorial)
+    comboBoxEditorial.grid(column=4, row=1, pady=5)
+
+    # Instancia de la clase Bodega
+    b = Bodega()
+    # Lista de generos para el comboBoxBodega
+    listas = b.listarBodega()
 
     # Combobox del Frame frmForm
     comboBoxCategoria = ttk.Combobox(
@@ -477,6 +628,20 @@ def ventanaMain():
     Entry(frmFormEditar, textvariable=categoria).grid(
         column=4, row=1, pady=5, padx=5, sticky="w"
     )
+    Label(frmFormEditar, text="Editorial").grid(
+        column=4, row=0, pady=5, padx=5, sticky="w"
+    )
+    Entry(frmFormEditar, textvariable=editorial).grid(
+        column=4, row=1, pady=5, padx=5, sticky="w"
+    )
+
+    Label(frmFormEditar, text="Bodega").grid(
+        column=4, row=0, pady=5, padx=5, sticky="w"
+    )
+    Entry(frmFormEditar, textvariable=bodega).grid(
+        column=4, row=1, pady=5, padx=5, sticky="w"
+    )
+
     Button(frmFormEditar, text="buscar", command=BuscarLibros).grid(
         column=5, row=3, pady=5, padx=5, sticky="w"
     )
