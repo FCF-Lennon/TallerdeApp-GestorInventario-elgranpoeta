@@ -1,8 +1,11 @@
 from cProfile import label
+import fractions
+from re import MULTILINE
 from sqlite3 import Cursor
 from struct import pack
 from tkinter import *
 from tkinter import messagebox
+from turtle import right
 
 from mysqlx import Column
 from clases.libros import Libro
@@ -94,22 +97,36 @@ def ventana_login():
     lbl__logo = Label(frm_logo, image=logo, bg='#ec7225')
     lbl__logo.grid(column=0, row=0, pady=5)
 
-    labelUser = Label(frm_panel_login, text="Usuario",
-                      anchor="w", bg='#ec7225', fg='white')
+    labelUser = Label(
+        frm_panel_login, 
+        text="Usuario",
+        anchor="w", 
+        bg='#ec7225', 
+        fg='white')
     labelUser.grid(column=0, row=0, sticky='nswe', padx=3)
 
-    labelPass = Label(frm_panel_login, text="Contraseña",
-                      bg='#ec7225', anchor="w", fg='white')
+    labelPass = Label(
+        frm_panel_login, 
+        text="Contraseña",
+        bg='#ec7225', 
+        anchor="w", 
+        fg='white')
     labelPass.grid(column=0, row=2, sticky='nswe', padx=3)
 
     # Entry de la VentanaInicio
-    entryUser = Entry(frm_panel_login, width=27,
-                      relief='flat', textvariable=user)
+    entryUser = Entry(
+        frm_panel_login, 
+        width=27,
+        relief='flat', 
+        textvariable=user)
     entryUser.grid(column=0, row=1, padx=3, sticky='nswe')
     entryUser.focus()
 
-    entryPass = Entry(frm_panel_login, show="*", width=27,
-                      relief='flat', textvariable=password)
+    entryPass = Entry(
+        frm_panel_login, 
+        show="*", width=27,
+        relief='flat', 
+        textvariable=password)
     entryPass.grid(column=0, row=3, padx=3, sticky='nswe')
 
     # Botones de la ventanaInicio
@@ -155,43 +172,93 @@ def ventana_login():
 
     ''' LABEL INFOMACION -------------- '''
 
-    lbl_Informacion = Label(frm_Registrar, text='Información:', font=(
-        'Arial', 20), anchor='w', bg='white', fg='#ec7225', cursor='hand2')
+    lbl_Informacion = Label(
+        frm_Registrar, 
+        text='Información:', 
+        font=('Arial', 20), 
+        anchor='w', 
+        bg='white', 
+        fg='#ec7225', 
+        cursor='hand2')
     lbl_Informacion.grid(column=0, row=0, sticky='we')
 
-    lbl_info_one = Label(frm_Registrar, text='Apertura de Cuenta:',
-                         anchor='w', bg='white', fg='#515a5a')
+    lbl_info_one = Label(
+        frm_Registrar, 
+        text='Apertura de Cuenta:',
+        anchor='w', 
+        bg='white', 
+        fg='#515a5a')
     lbl_info_one.grid(column=0, row=1, sticky='w')
-    lbl_info_one_sms = Label(frm_Registrar, width=24, relief='flat',
-                             bg='#f0f0f0', text='llamar a 800 600 5526', fg='#515a5a')
+    lbl_info_one_sms = Label(
+        frm_Registrar, 
+        width=24, 
+        relief='flat',
+        bg='#f0f0f0', 
+        text='llamar a 800 600 5526', 
+        fg='#515a5a')
     lbl_info_one_sms.grid(column=0, row=2)
 
-    lbl_info_two = Label(frm_Registrar, text='Recuperar Contraseña:',
-                         anchor='w', bg='white', fg='#515a5a')
+    lbl_info_two = Label(
+        frm_Registrar, 
+        text='Recuperar Contraseña:',
+        anchor='w', 
+        bg='white', 
+        fg='#515a5a')
     lbl_info_two.grid(column=0, row=3, sticky='w')
-    lbl_info_two_sms = Label(frm_Registrar, width=24, relief='flat',
-                             bg='#f0f0f0', text='llamar a 800 600 5528 ', fg='#515a5a')
+    lbl_info_two_sms = Label(
+        frm_Registrar, 
+        width=24, 
+        relief='flat',
+        bg='#f0f0f0', 
+        text='llamar a 800 600 5528 ', 
+        fg='#515a5a')
     lbl_info_two_sms.grid(column=0, row=4)
 
     lbl_info_three = Label(
-        frm_Registrar, text='Cuenta Bloqueda:', anchor='w', bg='white', fg='#515a5a')
+        frm_Registrar, 
+        text='Cuenta Bloqueda:', 
+        anchor='w', 
+        bg='white', 
+        fg='#515a5a')
     lbl_info_three.grid(column=0, row=5, sticky='w')
-    lbl_info_three_sms = Label(frm_Registrar, width=24, relief='flat',
-                               bg='#f0f0f0', text='llamar a 800 600 5530 ', fg='#515a5a')
+    lbl_info_three_sms = Label(
+        frm_Registrar, 
+        width=24, 
+        relief='flat',
+        bg='#f0f0f0', 
+        text='llamar a 800 600 5530 ', 
+        fg='#515a5a')
     lbl_info_three_sms.grid(column=0, row=6)
 
-    lbl_info_four = Label(frm_Registrar, text='Para Soporte:',
-                          anchor='w', bg='white', fg='#515a5a')
+    lbl_info_four = Label(
+        frm_Registrar, text='Para Soporte:',
+        anchor='w', 
+        bg='white', 
+        fg='#515a5a')
     lbl_info_four.grid(column=0, row=7, sticky='w')
-    lbl_info_four_sms_one = Label(frm_Registrar, width=24, relief='flat',
-                                  bg='#f0f0f0', text='llamar a 800 600 5532', fg='#515a5a')
+    lbl_info_four_sms_one = Label(
+        frm_Registrar, 
+        width=24, 
+        relief='flat',
+        bg='#f0f0f0', 
+        text='llamar a 800 600 5532', 
+        fg='#515a5a')
     lbl_info_four_sms_one.grid(column=0, row=8)
 
-    lbl_info_email = Label(frm_Registrar, text='Email:',
-                           anchor='w', bg='white', fg='#515a5a')
+    lbl_info_email = Label(
+        frm_Registrar, 
+        text='Email:',
+        anchor='w', 
+        bg='white', 
+        fg='#515a5a')
     lbl_info_email.grid(column=0, row=9, sticky='w')
-    lbl_info_three_sms_three = Label(frm_Registrar, width=24, relief='flat',
-                                     bg='#f0f0f0', text='mesadeayuda@elgranpoeta.cl', fg='#ec7225')
+    lbl_info_three_sms_three = Label(
+        frm_Registrar, 
+        width=24, 
+        relief='flat',
+        bg='#f0f0f0', 
+        text='mesadeayuda@elgranpoeta.cl', 
+        fg='#ec7225')
     lbl_info_three_sms_three.grid(column=0, row=10)
 
     ''' BUTTON -------------- '''
@@ -313,7 +380,7 @@ def ventanaMain():
     # Instanciación de la ventana principal
     ventana_main = Tk()
     ventana_main.title(f"El Gram Poeta {userNameAdm} Administrador")
-    ventana_main.geometry("1100x500")
+    ventana_main.geometry("1350x500")
     ventana_main.resizable(0, 0)
 
     def registrar():
@@ -323,7 +390,7 @@ def ventanaMain():
             # Valida que el nombre no pase 70 caracteres
             if len(nombre.get()) < 70:
                 libro = Libro(codigo, nombre.get(),
-                              autor.get(), Catid, stock.get(), editorial(), bodega())
+                autor.get(), Catid, stock.get(), editorial(), bodega())
                 mensaje = libro.insertarLibro()
                 if mensaje:
                     messagebox.showinfo("Registrado", mensaje)
@@ -365,8 +432,8 @@ def ventanaMain():
             entryNombre.insert(0, nombre_libro)
             entryAutor.insert(0, autor_libro)
             entryStock.insert(0, stock_libro)
-            entryEditorial.insert(0, editorial_libro)
-            entryBodega.insert(0, bodega_libro)
+            comboBoxEditorial.insert(0, editorial_libro)
+            comboBoxBodega.insert(0, bodega_libro)
             comboBoxCategoria.set(categoria_libro)
         except:
             pass
@@ -386,8 +453,8 @@ def ventanaMain():
         entryNombre.config(state='normal')
         entryAutor.config(state='normal')
         entryStock.config(state='normal')
-        entryEditorial.config(state='normal')
-        entryBodega.config(state='normal')
+        comboBoxEditorial.config(state='normal')
+        comboBoxBodega.config(state='normal')
         comboBoxCategoria.config(state='readonly')
 
         botonRegistrar.config(state='normal')
@@ -400,8 +467,8 @@ def ventanaMain():
         entryNombre.config(state='disabled')
         entryAutor.config(state='disabled')
         entryStock.config(state='disabled')
-        entryEditorial.config(state='disabled')
-        entryBodega.config(state='disabled')
+        comboBoxEditorial.config(state='disabled')
+        comboBoxBodega.config(state='disabled')
         comboBoxCategoria.config(state='disabled')
 
         botonRegistrar.config(state='disabled')
@@ -486,87 +553,114 @@ def ventanaMain():
     # Botones del frameTabla
 
     botonBuscar = Button(frameTabla, text='Buscar Libro', command=BuscarLibros)
-    botonBuscar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                       bg='#158645', cursor='hand2', activebackground='#35BD6F')
+    botonBuscar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#158645', 
+        cursor='hand2', 
+        activebackground='#35BD6F')
     botonBuscar.grid(column=0, row=7, sticky="nwe", pady=5, padx=5)
 
     botonEditar = Button(frameTabla, text='Editar Libro', command=editar)
-    botonEditar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                       bg='#158645', cursor='hand2', activebackground='#35BD6F')
+    botonEditar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#158645', 
+        cursor='hand2', 
+        activebackground='#35BD6F')
     botonEditar.grid(column=1, row=7, sticky="nwe", pady=5, padx=5)
 
     botonActualizar = Button(
         frameTabla, text='Actualizar Tabla', command=actualizar)
-    botonActualizar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                           bg='#1658A2', cursor='hand2', activebackground='#3586DF')
+    botonActualizar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#1658A2', 
+        cursor='hand2', 
+        activebackground='#3586DF')
     botonActualizar.grid(column=2, row=7, sticky="nwe", pady=5, padx=5)
 
     botonActualizarLibro = Button(
-        frameTabla, text='Actualizar Libro', command=editarLibro)
-    botonActualizarLibro.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                                bg='#1658A2', cursor='hand2', activebackground='#3586DF')
+        frameTabla, 
+        text='Actualizar Libro', 
+        command=editarLibro)
+    botonActualizarLibro.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#1658A2', 
+        cursor='hand2', 
+        activebackground='#3586DF')
     botonActualizarLibro.grid(column=3, row=7, sticky="nwe", pady=5, padx=5)
 
     botonEliminar = Button(frameTabla, text="Eliminar Libro", command=eliminar)
-    botonEliminar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                         bg='#BD152E', cursor='hand2', activebackground='#E15370')
+    botonEliminar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#BD152E', 
+        cursor='hand2', 
+        activebackground='#E15370')
     botonEliminar.grid(column=4, row=7, sticky="nwe", pady=5, padx=5)
 
     # Frame para ingresar libros
+
     frmForm = Frame(frameListar)
+    frmForm.grid(row=0, column=0, sticky='nsew')
+
+    frm_menu_registro = Frame(frmForm)
+    frm_menu_registro.grid(row=0, column=0, sticky='nsew')
 
     # Label del Frame frmForm
-    labelCodigo = Label(frmForm, text="Codigo del Libro")
+    labelCodigo = Label(frm_menu_registro, text="ISBN")
     labelCodigo.config(font=('Arial', 12, 'bold'))
     labelCodigo.grid(column=0, row=0, pady=5, padx=5, sticky="w")
 
-    labelNombre = Label(frmForm, text="Nombre")
+    labelNombre = Label(frm_menu_registro, text="Nombre")
     labelNombre.config(font=('Arial', 12, 'bold'))
-    labelNombre.grid(column=1, row=0, pady=5, padx=5, sticky="w")
+    labelNombre.grid(column=0, row=1, pady=5, padx=5, sticky="w")
 
-    labelAutor = Label(frmForm, text="Autor")
+    labelAutor = Label(frm_menu_registro, text="Autor")
     labelAutor.config(font=('Arial', 12, 'bold'))
-    labelAutor.grid(column=2, row=0, pady=5, padx=5, sticky="w")
+    labelAutor.grid(column=0, row=2, pady=5, padx=5, sticky="w")
 
-    labelStock = Label(frmForm, text="Stock")
+    labelStock = Label(frm_menu_registro, text="Stock")
     labelStock.config(font=('Arial', 12, 'bold'))
-    labelStock.grid(column=3, row=0, pady=5, padx=5, sticky="w")
+    labelStock.grid(column=0, row=3, pady=5, padx=5, sticky="w")
 
-    labelCategoria = Label(frmForm, text="Categoria")
+    labelCategoria = Label(frm_menu_registro, text="Categoria")
     labelCategoria.config(font=('Arial', 12, 'bold'))
-    labelCategoria.grid(column=4, row=0, pady=5, padx=5, sticky="w")
+    labelCategoria.grid(column=0, row=4, pady=5, padx=5, sticky="w")
 
-    labelEditorial = Label(frmForm, text="Editorial")
+    labelEditorial = Label(frm_menu_registro, text="Editorial")
     labelEditorial.config(font=('Arial', 12, 'bold'))
-    labelEditorial.grid(column=5, row=0, pady=5, padx=5, sticky="w")
+    labelEditorial.grid(column=0, row=5, pady=5, padx=5, sticky="w")
 
-    labelBodegas = Label(frmForm, text="Bodegas")
+    labelBodegas = Label(frm_menu_registro, text="Bodegas")
     labelBodegas.config(font=('Arial', 12, 'bold'))
-    labelBodegas.grid(column=6, row=0, pady=5, padx=5, sticky="w")
+    labelBodegas.grid(column=0, row=6, pady=5, padx=5, sticky="w")
 
     # Entry del Frame frmForm
-    entryCodigo = Entry(frmForm, textvariable=codigo)
-    entryCodigo.grid(column=0, row=1, pady=5, padx=5)
+    entryCodigo = Entry(frm_menu_registro, textvariable=codigo)
+    entryCodigo.grid(column=1, row=0, pady=5, padx=5)
 
-    entryNombre = Entry(frmForm, textvariable=nombre)
+    entryNombre = Entry(frm_menu_registro, textvariable=nombre)
     entryNombre.grid(column=1, row=1, pady=5, padx=5)
 
-    entryAutor = Entry(frmForm, textvariable=autor)
-    entryAutor.grid(column=2, row=1, pady=5, padx=5)
+    entryAutor = Entry(frm_menu_registro, textvariable=autor)
+    entryAutor.grid(column=1, row=2, pady=5, padx=5)
 
-    entryStock = Entry(frmForm, textvariable=stock)
-    entryStock.grid(column=3, row=1, pady=5, padx=5)
+    entryStock = Entry(frm_menu_registro, textvariable=stock)
+    entryStock.grid(column=1, row=3, pady=5, padx=5)
 
-    entryEditorial = Entry(frmForm, textvariable=editorial)
-    entryEditorial.grid(column=4, row=1, pady=5, padx=5)
-
-    entryBodega = Entry(frmForm, textvariable=bodega)
-    entryBodega.grid(column=5, row=1, pady=5, padx=5)
 
     # Instancia de la clase Categoria
     c = Categoria()
     # Lista de generos para el comboBoxCategoria
     lista = c.listarCategorias()
+
+    # Combobox del Frame frmForm
+    comboBoxCategoria = ttk.Combobox(
+        frm_menu_registro, values=lista, textvariable=categoria)
+    comboBoxCategoria.grid(column=1, row=4, pady=5)
 
     # Instancia de la clase Editorial
     e = Editorial()
@@ -575,8 +669,8 @@ def ventanaMain():
 
     # Combobox del Frame frmForm
     comboBoxEditorial = ttk.Combobox(
-        frmForm, values=listas, textvariable=editorial)
-    comboBoxEditorial.grid(column=4, row=1, pady=5)
+        frm_menu_registro, values=listas, textvariable=editorial)
+    comboBoxEditorial.grid(column=1, row=5, pady=5)
 
     # Instancia de la clase Bodega
     b = Bodega()
@@ -584,29 +678,42 @@ def ventanaMain():
     listas = b.listarBodega()
 
     # Combobox del Frame frmForm
-    comboBoxCategoria = ttk.Combobox(
-        frmForm, values=lista, textvariable=categoria)
-    comboBoxCategoria.grid(column=4, row=1, pady=5)
 
+    comboBoxBodega = ttk.Combobox(
+        frm_menu_registro, values=listas, textvariable=bodega)
+    comboBoxBodega.grid(column=1, row=6, pady=5)
+
+    
     # Botones del Frame frmForm
-    botonNuevo = Button(frmForm, text="Nuevo Registro", command=habilitar)
-    botonNuevo.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                      bg='#158645', cursor='hand2', activebackground='#35BD6F')
-    botonNuevo.grid(column=6, row=0, sticky="w", pady=2, padx=5)
+    botonNuevo = Button(frm_menu_registro, text="Nuevo Registro", command=habilitar)
+    botonNuevo.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#158645', 
+        cursor='hand2', 
+        activebackground='#35BD6F')
+    botonNuevo.grid(column=0, row=7, sticky="w", pady=2, padx=5, columnspan=2)
 
-    botonRegistrar = Button(frmForm, text="Registrar", command=registrar)
-    botonRegistrar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                          bg='#1658A2', cursor='hand2', activebackground='#3586DF')
-    botonRegistrar.grid(column=6, row=1, sticky="w", pady=2, padx=5)
+    botonRegistrar = Button(frm_menu_registro, text="Registrar", command=registrar)
+    botonRegistrar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#1658A2', 
+        cursor='hand2', 
+        activebackground='#3586DF')
+    botonRegistrar.grid(column=0, row=8, sticky="w", pady=2, padx=5)
 
-    botonCancelar = Button(frmForm, text="Cancelar", command=desactivar)
-    botonCancelar.config(font=('Arial', 8, 'bold'), fg='#DAD5D6',
-                         bg='#BD152E', cursor='hand2', activebackground='#E15370')
-    botonCancelar.grid(column=6, row=2, sticky="w", pady=2, padx=5)
+    botonCancelar = Button(frm_menu_registro, text="Cancelar", command=desactivar)
+    botonCancelar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#BD152E', 
+        cursor='hand2', 
+        activebackground='#E15370')
+    botonCancelar.grid(column=1, row=8, sticky="w", pady=2, padx=5)
 
     # Frame para editar libros
     frameEditar = Frame(ventana_main)
-
     frmTituloEditar = Frame(frameEditar)
     frmTituloEditar.pack()
     Label(frmTituloEditar, text="Editar Libros", font=("Arial", 20)).pack()
@@ -748,7 +855,7 @@ def ventanaUser():
             contador += 1
 
     ventana_user = Tk()
-    ventana_user.title(f"Biblioteca de {userName}")
+    # ventana_user.title(f"Biblioteca de {userName}")
     ventana_user.geometry("1100x500")
     ventana_user.resizable(0, 0)
 
