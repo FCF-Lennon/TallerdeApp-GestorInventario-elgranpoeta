@@ -76,16 +76,23 @@ class Libro:
         return listado
 
     def buscarLibro(self):
-        sql = f"""  SELECT l.codigo,l.nombre,l.autor,l.stock,c.nombre 
-                    FROM libro l JOIN categoria c 
+        sql = f"""  SELECT l.codigo,l.nombre,l.autor,l.stock,c.nombre, e.nombre, b.nombre
+                    FROM libro l JOIN categoria c JOIN editorial e join bodega b
                     WHERE l.codigo = {self.__codigo} 
-                    AND l.categoriaID = c.categoriaID"""
-                    
+                    or l.nombre = "{self.__nombre}"
+                    or l.autor = "{self.__autor}"
+                    or l.categoriaID = {self.__categoria}
+                    or l.editorialID = {self.__editorial}
+                    or l.bodegaID = {self.__bodega}"
+                    AND l.categoriaID = c.categoriaID
+                    AND l.editorialID = e.editorialID
+                    AND l.bodegaID = b.bodegaID  """
+
         listado = self.__conectar.listarTodo(sql)
         return listado
 
     def editarLibro(self):
-        sql = f'UPDATE libro SET nombre = "{self.__nombre}", autor = "{self.__autor}", stock = {self.__stock}, categoriaID = {self.__categoria} WHERE codigo = {self.__codigo}'
+        sql = f""" UPDATE libro SET nombre = "{self.__nombre}", autor = "{self.__autor}", stock = {self.__stock}, categoriaID = {self.__categoria}, editorialID = {self.__editorial}, bodegaID = {self.__bodega} WHERE codigo = {self.__codigo}"""
         mensaje = self.__conectar.ejecutar(sql)
         if mensaje == 1:
             mensaje = 'Libro actualizado correctamente'

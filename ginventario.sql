@@ -143,15 +143,3 @@ alter table libro add constraint FK_impreso foreign key (editorialID)
 
 alter table libro add constraint FK_tiene foreign key (categoriaID)
       references categoria (categoriaID) on delete restrict on update restrict;
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@ from sqlite3 import Cursor
 from struct import pack
 from tkinter import *
 from tkinter import messagebox
-from turtle import right
+from turtle import right, width
 
 from mysqlx import Column
 from clases.libros import Libro
@@ -292,56 +292,6 @@ def ventanaMain():
         bodega.set("")
     # Equipo de contruccion
 
-    def bobContructor():
-        for widget in ventana_main.winfo_children():
-            widget.pack_forget()
-        frmContruccion = Frame(ventana_main)
-        frmContruccion.pack()
-
-        labelTitulo = Label(frmContruccion, text="BOB's CONTRUCTION SITE")
-        labelTitulo.config(font=('Arial', 40, 'bold'))
-        labelTitulo.pack()
-
-        labelBob = Label(
-            frmContruccion, text="Hola como el ingeniero responsable de esta obra lamenteo informarle que")
-        labelBob.config(font=('Arial', 12, 'bold'))
-        labelBob.pack()
-
-        labelBob2 = Label(
-            frmContruccion, text="estamos atrasados, disculpe por la demora por eso aqui le dejo nuestra canción")
-        labelBob2.config(font=('Arial', 12, 'bold'))
-        labelBob2.pack()
-
-        labelCancion = Label(
-            frmContruccion, text="Bob construye ¿Podran hacerlo? Bob construye ¡SI PODREMOS!")
-        labelCancion.config(font=('Arial', 9, 'bold'))
-        labelCancion.pack()
-
-        labelCancion2 = Label(
-            frmContruccion, text="Scoop, Mot y Disy y Rolly tambien Lofty y Wendy lo ayudan bien son un gran equipo al trabajar y se divierten al terminar")
-        labelCancion2.config(font=('Arial', 9, 'bold'))
-        labelCancion2.pack()
-
-        labelCancion3 = Label(
-            frmContruccion, text="Bob construye ¿Podran hacerlo? Bob construye ¡SI PODREMOS!")
-        labelCancion3.config(font=('Arial', 9, 'bold'))
-        labelCancion3.pack()
-
-        labelCancion4 = Label(
-            frmContruccion, text="Pincha y una ave, Travis y Spot juegan contentos amigos son")
-        labelCancion4.config(font=('Arial', 9, 'bold'))
-        labelCancion4.pack()
-
-        labelCancion5 = Label(
-            frmContruccion, text="Bob construye ¿Podran hacerlo? Bob construye ¡SI PODREMOS!")
-        labelCancion5.config(font=('Arial', 9, 'bold'))
-        labelCancion5.pack()
-
-        labelIngeniero = Label(
-            frmContruccion, text="¡MUCHAS GRACIAS BANDA AHI NOS VEMOS!")
-        labelIngeniero.config(font=('Arial', 20, 'bold'))
-        labelIngeniero.pack()
-
     def cerrarSesion():
         ventana_main.destroy()
         ventana_login()
@@ -380,30 +330,44 @@ def ventanaMain():
     # Instanciación de la ventana principal
     ventana_main = Tk()
     ventana_main.title(f"El Gram Poeta {userNameAdm} Administrador")
+    ventana_main.iconbitmap("img/icon.ico")
     ventana_main.geometry("1350x500")
     ventana_main.resizable(0, 0)
 
     def registrar():
+
         try:
             resultado = categoria.get().split(sep=" ")
-            Catid = resultado[0]
+            CatId = resultado[0]
+            resultado2 = editorial.get().split(sep=" ")
+            EditId = resultado2[0]
+            resultado3 = bodega.get().split(sep=" ")
+            BodeId = resultado3[0]
+
             # Valida que el nombre no pase 70 caracteres
+
             if len(nombre.get()) < 70:
                 libro = Libro(codigo, nombre.get(),
-                autor.get(), Catid, stock.get(), editorial(), bodega())
+                autor.get(), CatId, stock.get(), EditId, BodeId)
                 mensaje = libro.insertarLibro()
                 if mensaje:
                     messagebox.showinfo("Registrado", mensaje)
                     conserje()
+
         except:
             messagebox.showerror("Error", "Debe ingresar datos válidos.")
 
     def editarLibro():
         try:
             resultado = categoria.get().split(sep=" ")
-            Catid = resultado[0]
+            CatId = resultado[0]
+            resultado2 = editorial.get().split(sep=" ")
+            EditId = resultado2[0]
+            resultado3 = bodega.get().split(sep=" ")
+            BodeId = resultado3[0]
+
             libro = Libro(codigo.get(), nombre.get(),
-            autor.get(), Catid, stock.get(), editorial(), bodega())
+            autor.get(), CatId, stock.get(), EditId, BodeId)
             mensaje = libro.editarLibro()
             if mensaje:
                 messagebox.showinfo("Editado", mensaje)
@@ -477,10 +441,16 @@ def ventanaMain():
         botonEliminar.config(state='disabled')
         conserje()
 
-    def BuscarLibros():
+        # HAY QUE REVISAR ESTO
 
+    def BuscarLibros():
+        bodega = bodega.get().split(sep=" ") 
+        bodegaId = bodega[0]
+        
         try:
-            libro = Libro(codigo.get())
+            libro = Libro(  
+                bodegaId
+                            )
             listar = libro.buscarLibro()
             for l in listar:
                 nombre.set(l[1])
@@ -504,18 +474,15 @@ def ventanaMain():
 
     createmenuPerfil = Menu(menubar, tearoff=0)
     menubar.add_cascade(label="Perfil", menu=createmenuPerfil)
-    createmenuPerfil.add_command(label="Editar Perfil", command=bobContructor)
-    createmenuPerfil.add_command(
-        label="Arriendos de libros", command=bobContructor)
-    createmenuPerfil.add_command(label="Ver Perfil", command=bobContructor)
-
-    menubar.add_cascade(label="Configuracion", command=bobContructor)
+    createmenuPerfil.add_command(label="Editar Perfil")
+    
+    createmenuPerfil.add_command(label="Ver Perfil")
 
     createmenuAyuda = Menu(menubar, tearoff=0)
     menubar.add_cascade(label="Ayuda", menu=createmenuAyuda)
-    createmenuAyuda.add_command(label="Soporte Tecnico", command=bobContructor)
+    createmenuAyuda.add_command(label="Soporte Tecnico")
     createmenuAyuda.add_command(
-        label="Reportar Problema", command=bobContructor)
+        label="Reportar Problema")
     createmenuAyuda.add_command(label="Cerrar Sesion", command=cerrarSesion)
     createmenuAyuda.add_command(label="Salir", command=ventana_main.destroy)
 
@@ -530,18 +497,27 @@ def ventanaMain():
 
     # Frame para listar los libros
     frameListar = Frame(ventana_main)
+
     # Frame de la tabla de libros
     frameTabla = Frame(frameListar)
-    tabla = ttk.Treeview(frameTabla)
-    tabla.grid(row=5, column=0, columnspan=5, sticky='nse')
+    frameTabla.pack()
+    tabla = ttk.Treeview(frameTabla, selectmode="browse", height=8)
+    tabla.pack(side="left")
     # Scroll de frameTabla
     scroll = ttk.Scrollbar(frameTabla, orient='vertical', command=tabla.yview)
-    scroll.grid(row=5, column=5, sticky='nse')
-    tabla.config(yscrollcommand=scroll.set)
+    scroll.pack(side="right", fill="both")
 
     tabla["columns"] = ("Codigo", "Categoria", "Nombre",
                         "Autor", "Stock", "Editorial", "Bodegas")
     tabla.column("#0", width=0, stretch=NO)
+    tabla.column("#1", width = 80, anchor = 'e')
+    tabla.column("#2", width = 80, anchor = 'e')
+    tabla.column("#3", width = 80, anchor = 'e')
+    tabla.column("#4", width = 80, anchor = 'e' )
+    tabla.column("#5", width = 85, anchor = 'e')
+    tabla.column("#6", width = 85, anchor = 'e')
+    tabla.column("#7", width = 70, anchor = 'e')
+
     tabla.heading("Codigo", text="Codigo", anchor=CENTER)
     tabla.heading("Categoria", text="Categoria", anchor=CENTER)
     tabla.heading("Nombre", text="Nombre", anchor=CENTER)
@@ -549,6 +525,8 @@ def ventanaMain():
     tabla.heading("Stock", text="Stock", anchor=CENTER)
     tabla.heading("Editorial", text="Editorial", anchor=CENTER)
     tabla.heading("Bodegas", text="Bodegas", anchor=CENTER)
+
+    tabla.configure(show='headings', yscrollcommand=scroll.set)
 
     # Botones del frameTabla
 
@@ -559,7 +537,7 @@ def ventanaMain():
         bg='#158645', 
         cursor='hand2', 
         activebackground='#35BD6F')
-    botonBuscar.grid(column=0, row=7, sticky="nwe", pady=5, padx=5)
+    botonBuscar.grid(column=0, row=0, sticky="nwe", pady=5, padx=5)
 
     botonEditar = Button(frameTabla, text='Editar Libro', command=editar)
     botonEditar.config(
@@ -568,7 +546,7 @@ def ventanaMain():
         bg='#158645', 
         cursor='hand2', 
         activebackground='#35BD6F')
-    botonEditar.grid(column=1, row=7, sticky="nwe", pady=5, padx=5)
+    botonEditar.grid(column=1, row=0, sticky="nwe", pady=5, padx=5)
 
     botonActualizar = Button(
         frameTabla, text='Actualizar Tabla', command=actualizar)
@@ -578,7 +556,7 @@ def ventanaMain():
         bg='#1658A2', 
         cursor='hand2', 
         activebackground='#3586DF')
-    botonActualizar.grid(column=2, row=7, sticky="nwe", pady=5, padx=5)
+    botonActualizar.grid(column=2, row=0, sticky="nwe", pady=5, padx=5)
 
     botonActualizarLibro = Button(
         frameTabla, 
@@ -590,7 +568,7 @@ def ventanaMain():
         bg='#1658A2', 
         cursor='hand2', 
         activebackground='#3586DF')
-    botonActualizarLibro.grid(column=3, row=7, sticky="nwe", pady=5, padx=5)
+    botonActualizarLibro.grid(column=3, row=0, sticky="nwe", pady=5, padx=5)
 
     botonEliminar = Button(frameTabla, text="Eliminar Libro", command=eliminar)
     botonEliminar.config(
@@ -599,7 +577,7 @@ def ventanaMain():
         bg='#BD152E', 
         cursor='hand2', 
         activebackground='#E15370')
-    botonEliminar.grid(column=4, row=7, sticky="nwe", pady=5, padx=5)
+    botonEliminar.grid(column=4, row=0, sticky="nwe", pady=5, padx=5)
 
     # Frame para ingresar libros
 
@@ -855,7 +833,7 @@ def ventanaUser():
             contador += 1
 
     ventana_user = Tk()
-    # ventana_user.title(f"Biblioteca de {userName}")
+    ventana_user.title(f"Biblioteca de {userName}")
     ventana_user.geometry("1100x500")
     ventana_user.resizable(0, 0)
 
@@ -868,22 +846,22 @@ def ventanaUser():
     createmenuOpciones.add_command(
         label="Ver Libros Disponibles", command=Libros)
     createmenuOpciones.add_command(
-        label="Arrendar Libros", command=bobContructor)
+        label="Arrendar Libros")
 
     createmenuPerfil = Menu(menubar, tearoff=0)
     menubar.add_cascade(label="Perfil", menu=createmenuPerfil)
-    createmenuPerfil.add_command(label="Editar Perfil", command=bobContructor)
+    createmenuPerfil.add_command(label="Editar Perfil")
     createmenuPerfil.add_command(
-        label="Libros Arrendados", command=bobContructor)
-    createmenuPerfil.add_command(label="Ver Perfil", command=bobContructor)
+        label="Libros Arrendados")
+    createmenuPerfil.add_command(label="Ver Perfil")
 
-    menubar.add_command(label="Configuracion", command=bobContructor)
+    menubar.add_command(label="Configuracion")
 
     createmenuAyuda = Menu(menubar, tearoff=0)
     menubar.add_cascade(label="Ayuda", menu=createmenuAyuda)
-    createmenuAyuda.add_command(label="Soporte Tecnico", command=bobContructor)
+    createmenuAyuda.add_command(label="Soporte Tecnico")
     createmenuAyuda.add_command(
-        label="Reportar Problema", command=bobContructor)
+        label="Reportar Problema")
     createmenuAyuda.add_command(label="Cerrar Sesion", command=cerrarSesion)
     createmenuAyuda.add_command(label="Salir", command=ventana_user.destroy)
     # Frame para listar los libros
