@@ -9,8 +9,8 @@ class Libro:
         self.__autor = autor
         self.__categoria = categoria
         self.__stock = stock
-        self.__bodega = bodega
         self.__editorial = editorial
+        self.__bodega = bodega
         self.__conectar = Conectar()
 
     @property
@@ -50,19 +50,37 @@ class Libro:
         self.__stock = value
 
     def insertarLibro(self):
-        sql = f'INSERT INTO libro(nombre,autor,stock,categoriaID) VALUE("{self.__nombre}","{self.__autor}",{self.__stock},{self.__categoria})'
+        sql = f"""  INSERT INTO libro(nombre, autor, stock, categoriaID, bodegaID, editorialID) 
+                    VALUE(
+                            "{self.__nombre}",
+                            "{self.__autor}",
+                            {self.__stock}, 
+                            {self.__categoria}, 
+                            "{self.__editorial}", 
+                            "{self.__bodega}"
+                        )"""
         mensaje = self.__conectar.ejecutar(sql)
         if mensaje == 1:
             mensaje = "Libro ingresado correctamente"
         return mensaje
 
     def listarLibros(self):
-        sql = f"SELECT l.codigo, c.nombre,l.nombre,l.autor,l.stock FROM libro l JOIN categoria c WHERE l.categoriaID = c.categoriaID ORDER BY l.codigo DESC"
+        sql = f"""  SELECT l.codigo, c.nombre ,l.nombre ,l.autor, l.stock, e.nombre, b.nombre
+                    FROM libro l JOIN categoria c JOIN editorial e JOIN bodega b 
+                    WHERE l.categoriaID = c.categoriaID 
+                    AND l.editorialID = e.editorialID
+                    AND l.bodegaID = b.bodegaID
+                    ORDER BY l.codigo DESC """
+
         listado = self.__conectar.listarTodo(sql)
         return listado
 
     def buscarLibro(self):
-        sql = f"SELECT l.codigo,l.nombre,l.autor,l.stock,c.nombre FROM libro l JOIN categoria c WHERE l.codigo = {self.__codigo} AND l.categoriaID = c.categoriaID"
+        sql = f"""  SELECT l.codigo,l.nombre,l.autor,l.stock,c.nombre 
+                    FROM libro l JOIN categoria c 
+                    WHERE l.codigo = {self.__codigo} 
+                    AND l.categoriaID = c.categoriaID"""
+                    
         listado = self.__conectar.listarTodo(sql)
         return listado
 
