@@ -1,4 +1,3 @@
-from typing import MutableSequence
 from clases.conectar import Conectar
 
 
