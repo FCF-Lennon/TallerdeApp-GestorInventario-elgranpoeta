@@ -1,3 +1,4 @@
+from cProfile import label
 from tkinter import *
 from tkinter import messagebox
 
@@ -11,9 +12,8 @@ from clases.bodega import Bodega
 from tkinter import ttk
 from tkinter import messagebox as Messagebox
 
+
 # Ventana de Inicio de Sesion
-
-
 def ventana_login():
     # Funcion validar llama a la funcion iniciarSesion o IniciarSesionAdmin de la clase Usuario
     # enviandole 2 variables(user,password), despues guarda la lista que le retorna
@@ -401,47 +401,86 @@ def ventanaMain():
             comboBoxCategoria.set(categoria_libro)
         except:
             pass
-
-    def eliminar():
-        try:
-            libro = Libro(codigo.get())
-            mensaje = libro.eliminarLibro()
-            if mensaje:
-                messagebox.showinfo("Eliminado", mensaje)
-                conserje()
-        except:
-            messagebox.showerror("Error", "Debe ingresar datos válidos.")
-
+            # pendiente
     def BuscarLibros():
         
         try:
-            libro = Libro(  
+            if codigo.get() != '':
+                libro = Libro(
                 codigo.get()
-                            )
-            listar = libro.buscarLibro()
-                    
-            for l in listar:
-                nombre.set(l[1])
-                autor.set(l[2])
-                stock.set(l[3])
-                categoria.set(l[4])
-                editorial.set(l[5])
-                bodega.set(l[6])
+                )
+
+                listar = libro.buscarLibro()
+
+                for l in listar:
+                    nombre.set(l[1])
+                    autor.set(l[2])
+                    stock.set(l[3])
+                    categoria.set(l[4])
+                    editorial.set(l[5])
+                    bodega.set(l[6])
+
+            else:
+                messagebox.showerror("Error", "No hay parametros de busqueda")
         except:
+
             messagebox.showerror("Error", "No se pudo encontrar el libro.")
+
             conserje()
     
-    
-    
-    # Instanciación de la ventana principal
+    def desactivar():
 
+        entryCodigo.config(state='disabled')
+        entryNombre.config(state='disabled')
+        entryAutor.config(state='disabled')
+        entryStock.config(state='disabled')
+        comboBoxEditorial.config(state='disabled')
+        comboBoxBodega.config(state='disabled')
+        comboBoxCategoria.config(state='disabled')
+        botonRegistrar.config(state='disabled')
+        botonCancelar.config(state='disabled')
+        conserje()
+    
+    def eliminar():
+        try:
+            if codigo.get() != '':
+                libro = Libro(codigo.get())
+                mensaje = libro.eliminarLibro()
+                if mensaje:
+                    messagebox.showinfo("Eliminado", mensaje)
+                    conserje()
+            else:
+                messagebox.showerror("Error", "No hay parametros de busqueda")
+        except:
+            messagebox.showerror("Error", "Debe ingresar datos válidos.")
+
+    def editarLibro():
+        try:
+            if codigo.get() != '':
+                resultado = categoria.get().split(sep=" ")
+                CatId = resultado[0]
+                resultado2 = editorial.get().split(sep=" ")
+                EditId = resultado2[0]
+                resultado3 = bodega.get().split(sep=" ")
+                BodeId = resultado3[0]
+
+                libro = Libro(codigo.get(), nombre.get(),
+                    autor.get(), CatId, stock.get(), EditId, BodeId)
+                mensaje = libro.editarLibro()
+                if mensaje:
+                    messagebox.showinfo("Editado", mensaje)
+                    conserje()
+            else:
+                messagebox.showerror("Error", "No hay parametros de busqueda")
+        except:
+            messagebox.showerror("Error", "Debe ingresar datos válidos.")
+
+    # Instanciación de la ventana principal
     ventana_main = Tk()
     ventana_main.title(f"El Gram Poeta {userNameAdm} Administrador") 
     """ print(userNameAdm, 'linea 318 de ventanas') """
     """ ventana_main.iconbitmap("img/icon.ico") """ 
-    ventana_main.geometry("1300x500")
     ventana_main.resizable(0, 0) 
-
 
     """ MENU """
 
@@ -476,61 +515,60 @@ def ventanaMain():
     editorial = StringVar()
     bodega = StringVar()
 
-
     """ MENU INGRESAR LIBRO """
 
     # Frame para listar los libros
-    frameListar = Frame(ventana_main)
+    frameListar = Frame(ventana_main, width=30)
 
     # Frame para ingresar libros
 
-    frmForm = Frame(frameListar)
+    frmForm = Frame(frameListar, bg='#ec7225')
     frmForm.grid(row=0, column=0, sticky='nsew')
 
-    frm_menu_registro = Frame(frmForm)
-    frm_menu_registro.grid(row=0, column=0, sticky='nsew')
+
+    frm_menu_registro = Frame(frmForm, bg='#ec7225')
+    frm_menu_registro.grid(row=1, column=0, sticky='nsew')
+
+    frm_menu_labels = Frame(frm_menu_registro, bg='#ec7225', width=20)
+    frm_menu_labels.grid(row=0, column=0, sticky='nsew')
+
+    frm_menu_cajas = Frame(frm_menu_registro, bg='#ec7225', width=10)
+    frm_menu_cajas.grid(row=0, column=1, sticky='nsew', pady=2)
+
+    frm_menu_botones = Frame(frm_menu_registro, bg='#ec7225', width=10)
+    frm_menu_botones.grid(row=4, column=0, sticky='nsew', columnspan=2)
 
     # Label del Frame frmForm
-    labelCodigo = Label(frm_menu_registro, text="ISBN")
-    labelCodigo.config(font=('Arial', 12, 'bold'))
-    labelCodigo.grid(column=0, row=0, pady=5, padx=5, sticky="w")
 
-    labelNombre = Label(frm_menu_registro, text="Nombre")
-    labelNombre.config(font=('Arial', 12, 'bold'))
-    labelNombre.grid(column=0, row=1, pady=5, padx=5, sticky="w")
-
-    labelAutor = Label(frm_menu_registro, text="Autor")
-    labelAutor.config(font=('Arial', 12, 'bold'))
-    labelAutor.grid(column=0, row=2, pady=5, padx=5, sticky="w")
-
-    labelStock = Label(frm_menu_registro, text="Stock")
-    labelStock.config(font=('Arial', 12, 'bold'))
-    labelStock.grid(column=0, row=3, pady=5, padx=5, sticky="w")
-
-    labelCategoria = Label(frm_menu_registro, text="Categoria")
-    labelCategoria.config(font=('Arial', 12, 'bold'))
-    labelCategoria.grid(column=0, row=4, pady=5, padx=5, sticky="w")
-
-    labelEditorial = Label(frm_menu_registro, text="Editorial")
-    labelEditorial.config(font=('Arial', 12, 'bold'))
-    labelEditorial.grid(column=0, row=5, pady=5, padx=5, sticky="w")
-
-    labelBodegas = Label(frm_menu_registro, text="Bodegas")
-    labelBodegas.config(font=('Arial', 12, 'bold'))
-    labelBodegas.grid(column=0, row=6, pady=5, padx=5, sticky="w")
+    labeltitulo= Label(frmForm, text="El Gran Poeta", font=("Arial", 15), bg='#ec7225', fg='white')
+    labeltitulo.grid(row=0, column=0, sticky='nsew')
+    labelCodigo = Label(frm_menu_labels, text="ISBN", bg='#ec7225', fg='white')
+    labelCodigo.grid(column=0, row=1, sticky="w")
+    labelNombre = Label(frm_menu_labels, text="Nombre", bg='#ec7225', fg='white')
+    labelNombre.grid(column=0, row=2, sticky="w")
+    labelAutor = Label(frm_menu_labels, text="Autor", bg='#ec7225', fg='white')
+    labelAutor.grid(column=0, row=3, sticky="w")
+    labelStock = Label(frm_menu_labels, text="Stock", bg='#ec7225', fg='white')
+    labelStock.grid(column=0, row=4, sticky="w")
+    labelCategoria = Label(frm_menu_labels, text="Categoria", bg='#ec7225', fg='white')
+    labelCategoria.grid(column=0, row=6, sticky="w")
+    labelEditorial = Label(frm_menu_labels, text="Editorial", bg='#ec7225', fg='white')
+    labelEditorial.grid(column=0, row=7, sticky="w")
+    labelBodegas = Label(frm_menu_labels, text="Bodegas", bg='#ec7225', fg='white')
+    labelBodegas.grid(column=0, row=8, sticky="w")
 
     # Entry del Frame frmForm
-    entryCodigo = Entry(frm_menu_registro, textvariable=codigo)
-    entryCodigo.grid(column=1, row=0, pady=5, padx=5)
+    entryCodigo = Entry(frm_menu_cajas, textvariable=codigo)
+    entryCodigo.grid(column=1, row=0 , pady=1)
 
-    entryNombre = Entry(frm_menu_registro, textvariable=nombre)
-    entryNombre.grid(column=1, row=1, pady=5, padx=5)
+    entryNombre = Entry(frm_menu_cajas, textvariable=nombre)
+    entryNombre.grid(column=1, row=1 , pady=1)
 
-    entryAutor = Entry(frm_menu_registro, textvariable=autor)
-    entryAutor.grid(column=1, row=2, pady=5, padx=5)
+    entryAutor = Entry(frm_menu_cajas, textvariable=autor)
+    entryAutor.grid(column=1, row=2 , pady=1)
 
-    entryStock = Entry(frm_menu_registro, textvariable=stock)
-    entryStock.grid(column=1, row=3, pady=5, padx=5)
+    entryStock = Entry(frm_menu_cajas, textvariable=stock)
+    entryStock.grid(column=1, row=3 , pady=1)
 
     # Instancia de la clase Categoria
     c = Categoria()
@@ -539,8 +577,8 @@ def ventanaMain():
 
     # Combobox del Frame frmForm
     comboBoxCategoria = ttk.Combobox(
-        frm_menu_registro, values=lista, textvariable=categoria)
-    comboBoxCategoria.grid(column=1, row=4, pady=5)
+        frm_menu_cajas, values=lista, textvariable=categoria, width=17)
+    comboBoxCategoria.grid(column=1, row=4, pady=1)
 
     # Instancia de la clase Editorial
     e = Editorial()
@@ -549,8 +587,8 @@ def ventanaMain():
 
     # Combobox del Frame frmForm
     comboBoxEditorial = ttk.Combobox(
-        frm_menu_registro, values=listas, textvariable=editorial)
-    comboBoxEditorial.grid(column=1, row=5, pady=5)
+        frm_menu_cajas, values=listas, textvariable=editorial, width=17)
+    comboBoxEditorial.grid(column=1, row=5, pady=1)
 
     # Instancia de la clase Bodega
     b = Bodega()
@@ -560,36 +598,36 @@ def ventanaMain():
     # Combobox del Frame frmForm
 
     comboBoxBodega = ttk.Combobox(
-        frm_menu_registro, values=listas, textvariable=bodega)
-    comboBoxBodega.grid(column=1, row=6, pady=5)
+        frm_menu_cajas, values=listas, textvariable=bodega, width=17)
+    comboBoxBodega.grid(column=1, row=6, pady=1)
 
     # Botones del Frame frmForm
-    botonNuevo = Button(frm_menu_registro, text="Nuevo Registro", command=habilitar)
+    botonNuevo = Button(frm_menu_registro, text="Nuevo Registro", command=habilitar, relief=GROOVE)
     botonNuevo.config(
         font=('Arial', 8, 'bold'), 
         fg='#DAD5D6',
         bg='#158645', 
         cursor='hand2', 
         activebackground='#35BD6F')
-    botonNuevo.grid(column=0, row=7, sticky="w", pady=2, padx=5, columnspan=2)
+    botonNuevo.grid(column=0, row=7, sticky="nsew", columnspan=2)
 
-    botonRegistrar = Button(frm_menu_registro, text="Registrar", command=registrar)
+    botonRegistrar = Button(frm_menu_botones, text="Registrar", command=registrar, relief=GROOVE, width=12)
     botonRegistrar.config(
         font=('Arial', 8, 'bold'), 
         fg='#DAD5D6',
         bg='#1658A2', 
         cursor='hand2', 
         activebackground='#3586DF')
-    botonRegistrar.grid(column=0, row=8, sticky="w", pady=2, padx=5)
+    botonRegistrar.grid(column=0, row=0, sticky="w")
 
-    botonCancelar = Button(frm_menu_registro, text="Cancelar", command=desactivar)
+    botonCancelar = Button(frm_menu_botones, text="Cancelar", command=desactivar, relief=GROOVE, width=12)
     botonCancelar.config(
         font=('Arial', 8, 'bold'), 
         fg='#DAD5D6',
         bg='#BD152E', 
         cursor='hand2', 
         activebackground='#E15370')
-    botonCancelar.grid(column=1, row=8, sticky="w", pady=2, padx=5)
+    botonCancelar.grid(column=1, row=0, sticky="w")
 
 
     """" TABLA DE LIBROS """
@@ -635,6 +673,7 @@ def ventanaMain():
         tabla.delete(i)
 
     ventana_main.update()
+    desactivar()
     contador = 0
 
     for l in listar:
@@ -646,7 +685,7 @@ def ventanaMain():
         )
         contador += 1
 
-    frameListar.pack(side='left')
+    frameListar.pack(side='left', padx=5)
     frameTabla.pack(side='right')
 
     """ desactivar() """
@@ -705,7 +744,6 @@ def ventanaMain():
     """ ---------------------------- """
 
     ventana_main.mainloop()
-
 
 """
 # Frame para editar libros
@@ -766,3 +804,4 @@ Entry(frmFormEditar, textvariable=bodega).grid(
 Button(frmFormEditar, text="buscar", command=BuscarLibros).grid(
     column=5, row=3, pady=5, padx=5, sticky="w"
 )"""
+

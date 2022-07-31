@@ -82,7 +82,7 @@ class Libro:
                     or l.autor = "{self.__autor}"
                     or l.categoriaID = {self.__categoria}
                     or l.editorialID = {self.__editorial}
-                    or l.bodegaID = {self.__bodega}"
+                    or l.bodegaID = {self.__bodega}
                     AND l.categoriaID = c.categoriaID
                     AND l.editorialID = e.editorialID
                     AND l.bodegaID = b.bodegaID  """
