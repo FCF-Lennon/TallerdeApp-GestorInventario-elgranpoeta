@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import messagebox
-from turtle import left, right
 
 from mysqlx import Column
 from clases.libros import Libro
@@ -43,6 +42,7 @@ def ventana_login():
 
     def mostrarInfo():
         frm_two.grid(column=1, row=0, sticky='nsew')
+
 
     # Instanciación de la ventqna de inicio de sesión
     ventanaInicio = Tk()
@@ -264,7 +264,6 @@ def ventana_login():
 
     ventanaInicio.mainloop()
 
-
 # Ventana Principal
 def ventanaMain():
 
@@ -272,7 +271,168 @@ def ventanaMain():
         ventana_main.destroy()
         ventana_login()
 
+    def habilitar():
+        entryCodigo.config(state='normal')
+        entryNombre.config(state='normal')
+        entryAutor.config(state='normal')
+        entryStock.config(state='normal')
+        comboBoxEditorial.config(state='normal')
+        comboBoxBodega.config(state='normal')
+        comboBoxCategoria.config(state='readonly')
 
+        botonRegistrar.config(state='normal')
+        botonCancelar.config(state='normal')
+        botonActualizarLibro.config(state='normal')
+        botonEliminar.config(state='normal')
+
+    def desactivar():
+        entryCodigo.config(state='disabled')
+        entryNombre.config(state='disabled')
+        entryAutor.config(state='disabled')
+        entryStock.config(state='disabled')
+        comboBoxEditorial.config(state='disabled')
+        comboBoxBodega.config(state='disabled')
+        comboBoxCategoria.config(state='disabled')
+
+        botonRegistrar.config(state='disabled')
+        botonCancelar.config(state='disabled')
+        botonActualizarLibro.config(state='disabled')
+        botonEliminar.config(state='disabled')
+        conserje()
+
+    def registrar():
+
+        try:
+            resultado = categoria.get().split(sep=" ")
+            CatId = resultado[0]
+            resultado2 = editorial.get().split(sep=" ")
+            EditId = resultado2[0]
+            resultado3 = bodega.get().split(sep=" ")
+            BodeId = resultado3[0]
+
+            # Valida que el nombre no pase 70 caracteres
+
+            if len(nombre.get()) < 70:
+                libro = Libro(codigo, nombre.get(),
+                autor.get(), CatId, stock.get(), EditId, BodeId)
+                mensaje = libro.insertarLibro()
+                if mensaje:
+                    messagebox.showinfo("Registrado", mensaje)
+                    conserje()
+
+        except:
+            messagebox.showerror("Error", "Debe ingresar datos válidos.")
+
+    def conserje():
+        codigo.set("")
+        nombre.set("")
+        autor.set("")
+        stock.set("")
+        categoria.set("")
+        editorial.set("")
+        bodega.set("")
+
+    def actualizar():
+        libro = Libro()
+        listar = libro.listarLibros()
+
+        for widget in ventana_main.winfo_children():
+            widget.pack_forget()
+
+        for i in tabla.get_children():
+            tabla.delete(i)
+
+        ventana_main.update()
+        contador = 0
+
+        for l in listar:
+            tabla.insert(
+                parent="",
+                index="end",
+                iid=contador,
+                values=(l[0], l[1], l[2], l[3], l[4], l[5], l[6]),
+            )
+            contador += 1
+
+        frameListar.pack(side='left')
+        frameTabla.pack(side='right')
+
+    def editarLibro():
+        try:
+            resultado = categoria.get().split(sep=" ")
+            CatId = resultado[0]
+            resultado2 = editorial.get().split(sep=" ")
+            EditId = resultado2[0]
+            resultado3 = bodega.get().split(sep=" ")
+            BodeId = resultado3[0]
+
+            libro = Libro(codigo.get(), nombre.get(),
+            autor.get(), CatId, stock.get(), EditId, BodeId)
+            mensaje = libro.editarLibro()
+            if mensaje:
+                messagebox.showinfo("Editado", mensaje)
+                conserje()
+        except:
+            messagebox.showerror("Error", "Debe ingresar datos válidos.")
+        
+    def editar():
+        conserje()
+        try:
+            codigo_libro = tabla.item(tabla.selection())['values'][0]
+            categoria_libro = tabla.item(tabla.selection())['values'][1]
+            nombre_libro = tabla.item(tabla.selection())['values'][2]
+            autor_libro = tabla.item(tabla.selection())['values'][3]
+            stock_libro = tabla.item(tabla.selection())['values'][4]
+            editorial_libro = tabla.item(tabla.selection())['values'][5]
+            bodega_libro = tabla.item(tabla.selection())['values'][6]
+
+            habilitar()
+            botonRegistrar.config(state='disabled')
+            botonCancelar.config(state='disabled')
+            entryCodigo.config(state='normal')
+
+            entryCodigo.insert(0, codigo_libro)
+            entryCodigo.config(state='disabled')
+            entryNombre.insert(0, nombre_libro)
+            entryAutor.insert(0, autor_libro)
+            entryStock.insert(0, stock_libro)
+            comboBoxEditorial.insert(0, editorial_libro)
+            comboBoxBodega.insert(0, bodega_libro)
+            comboBoxCategoria.set(categoria_libro)
+        except:
+            pass
+
+    def eliminar():
+        try:
+            libro = Libro(codigo.get())
+            mensaje = libro.eliminarLibro()
+            if mensaje:
+                messagebox.showinfo("Eliminado", mensaje)
+                conserje()
+        except:
+            messagebox.showerror("Error", "Debe ingresar datos válidos.")
+
+    def BuscarLibros():
+        
+        try:
+            libro = Libro(  
+                codigo.get()
+                            )
+            listar = libro.buscarLibro()
+                    
+            for l in listar:
+                nombre.set(l[1])
+                autor.set(l[2])
+                stock.set(l[3])
+                categoria.set(l[4])
+                editorial.set(l[5])
+                bodega.set(l[6])
+        except:
+            messagebox.showerror("Error", "No se pudo encontrar el libro.")
+            conserje()
+    
+    
+    
     # Instanciación de la ventana principal
 
     ventana_main = Tk()
@@ -317,8 +477,9 @@ def ventanaMain():
     bodega = StringVar()
 
 
+    """ MENU INGRESAR LIBRO """
+
     # Frame para listar los libros
-    
     frameListar = Frame(ventana_main)
 
     # Frame para ingresar libros
@@ -371,7 +532,6 @@ def ventanaMain():
     entryStock = Entry(frm_menu_registro, textvariable=stock)
     entryStock.grid(column=1, row=3, pady=5, padx=5)
 
-
     # Instancia de la clase Categoria
     c = Categoria()
     # Lista de generos para el comboBoxCategoria
@@ -402,6 +562,35 @@ def ventanaMain():
     comboBoxBodega = ttk.Combobox(
         frm_menu_registro, values=listas, textvariable=bodega)
     comboBoxBodega.grid(column=1, row=6, pady=5)
+
+    # Botones del Frame frmForm
+    botonNuevo = Button(frm_menu_registro, text="Nuevo Registro", command=habilitar)
+    botonNuevo.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#158645', 
+        cursor='hand2', 
+        activebackground='#35BD6F')
+    botonNuevo.grid(column=0, row=7, sticky="w", pady=2, padx=5, columnspan=2)
+
+    botonRegistrar = Button(frm_menu_registro, text="Registrar", command=registrar)
+    botonRegistrar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#1658A2', 
+        cursor='hand2', 
+        activebackground='#3586DF')
+    botonRegistrar.grid(column=0, row=8, sticky="w", pady=2, padx=5)
+
+    botonCancelar = Button(frm_menu_registro, text="Cancelar", command=desactivar)
+    botonCancelar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#BD152E', 
+        cursor='hand2', 
+        activebackground='#E15370')
+    botonCancelar.grid(column=1, row=8, sticky="w", pady=2, padx=5)
+
 
     """" TABLA DE LIBROS """
 
@@ -435,6 +624,7 @@ def ventanaMain():
     tabla.heading("Editorial", text="Editorial", anchor=CENTER)
     tabla.heading("Bodegas", text="Bodegas", anchor=CENTER)
 
+
     libro = Libro()
     listar = libro.listarLibros()
 
@@ -459,238 +649,65 @@ def ventanaMain():
     frameListar.pack(side='left')
     frameTabla.pack(side='right')
 
+    """ desactivar() """
+
+    # Botones del frameTabla
+
+    botonBuscar = Button(frameTabla, text='Buscar Libro', command=BuscarLibros)
+    botonBuscar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#158645', 
+        cursor='hand2', 
+        activebackground='#35BD6F')
+    botonBuscar.grid(column=0, row=0, sticky="nwe", pady=5, padx=5)
+
+    botonEditar = Button(frameTabla, text='Editar Libro', command=editar)
+    botonEditar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#158645', 
+        cursor='hand2', 
+        activebackground='#35BD6F')
+    botonEditar.grid(column=1, row=0, sticky="nwe", pady=5, padx=5)
+
+    botonActualizar = Button(
+        frameTabla, text='Actualizar Tabla', command=actualizar)
+    botonActualizar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#1658A2', 
+        cursor='hand2', 
+        activebackground='#3586DF')
+    botonActualizar.grid(column=2, row=0, sticky="nwe", pady=5, padx=5)
+
+    botonActualizarLibro = Button(
+        frameTabla, 
+        text='Actualizar Libro', 
+        command=editarLibro)
+    botonActualizarLibro.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#1658A2', 
+        cursor='hand2', 
+        activebackground='#3586DF')
+    botonActualizarLibro.grid(column=3, row=0, sticky="nwe", pady=5, padx=5)
+
+    botonEliminar = Button(frameTabla, text="Eliminar Libro", command=eliminar)
+    botonEliminar.config(
+        font=('Arial', 8, 'bold'), 
+        fg='#DAD5D6',
+        bg='#BD152E', 
+        cursor='hand2', 
+        activebackground='#E15370')
+    botonEliminar.grid(column=4, row=0, sticky="nwe", pady=5, padx=5)
+
     """ ---------------------------- """
 
     ventana_main.mainloop()
 
 
-""" # Equipo de Limpieza
-    def conserje():
-        codigo.set("")
-        nombre.set("")
-        autor.set("")
-        stock.set("")
-        categoria.set("")
-        editorial.set("")
-        bodega.set("")
-    # Equipo de contruccion
-
-    def actualizar():
-        frmCRUDLibros()
-
-    # Frames del menu de opciones
-
-
-    def registrar():
-
-        try:
-            resultado = categoria.get().split(sep=" ")
-            CatId = resultado[0]
-            resultado2 = editorial.get().split(sep=" ")
-            EditId = resultado2[0]
-            resultado3 = bodega.get().split(sep=" ")
-            BodeId = resultado3[0]
-
-            # Valida que el nombre no pase 70 caracteres
-
-            if len(nombre.get()) < 70:
-                libro = Libro(codigo, nombre.get(),
-                autor.get(), CatId, stock.get(), EditId, BodeId)
-                mensaje = libro.insertarLibro()
-                if mensaje:
-                    messagebox.showinfo("Registrado", mensaje)
-                    conserje()
-
-        except:
-            messagebox.showerror("Error", "Debe ingresar datos válidos.")
-
-    def editarLibro():
-        try:
-            resultado = categoria.get().split(sep=" ")
-            CatId = resultado[0]
-            resultado2 = editorial.get().split(sep=" ")
-            EditId = resultado2[0]
-            resultado3 = bodega.get().split(sep=" ")
-            BodeId = resultado3[0]
-
-            libro = Libro(codigo.get(), nombre.get(),
-            autor.get(), CatId, stock.get(), EditId, BodeId)
-            mensaje = libro.editarLibro()
-            if mensaje:
-                messagebox.showinfo("Editado", mensaje)
-                conserje()
-        except:
-            messagebox.showerror("Error", "Debe ingresar datos válidos.")
-
-    def editar():
-        conserje()
-        try:
-            codigo_libro = tabla.item(tabla.selection())['values'][0]
-            categoria_libro = tabla.item(tabla.selection())['values'][1]
-            nombre_libro = tabla.item(tabla.selection())['values'][2]
-            autor_libro = tabla.item(tabla.selection())['values'][3]
-            stock_libro = tabla.item(tabla.selection())['values'][4]
-            editorial_libro = tabla.item(tabla.selection())['values'][5]
-            bodega_libro = tabla.item(tabla.selection())['values'][6]
-
-            habilitar()
-            botonRegistrar.config(state='disabled')
-            botonCancelar.config(state='disabled')
-            entryCodigo.config(state='normal')
-
-            entryCodigo.insert(0, codigo_libro)
-            entryCodigo.config(state='disabled')
-            entryNombre.insert(0, nombre_libro)
-            entryAutor.insert(0, autor_libro)
-            entryStock.insert(0, stock_libro)
-            comboBoxEditorial.insert(0, editorial_libro)
-            comboBoxBodega.insert(0, bodega_libro)
-            comboBoxCategoria.set(categoria_libro)
-        except:
-            pass
-
-    def eliminar():
-        try:
-            libro = Libro(codigo.get())
-            mensaje = libro.eliminarLibro()
-            if mensaje:
-                messagebox.showinfo("Eliminado", mensaje)
-                conserje()
-        except:
-            messagebox.showerror("Error", "Debe ingresar datos válidos.")
-
-    def habilitar():
-        entryCodigo.config(state='normal')
-        entryNombre.config(state='normal')
-        entryAutor.config(state='normal')
-        entryStock.config(state='normal')
-        comboBoxEditorial.config(state='normal')
-        comboBoxBodega.config(state='normal')
-        comboBoxCategoria.config(state='readonly')
-
-        botonRegistrar.config(state='normal')
-        botonCancelar.config(state='normal')
-        botonActualizarLibro.config(state='normal')
-        botonEliminar.config(state='normal')
-
-    def desactivar():
-        entryCodigo.config(state='disabled')
-        entryNombre.config(state='disabled')
-        entryAutor.config(state='disabled')
-        entryStock.config(state='disabled')
-        comboBoxEditorial.config(state='disabled')
-        comboBoxBodega.config(state='disabled')
-        comboBoxCategoria.config(state='disabled')
-
-        botonRegistrar.config(state='disabled')
-        botonCancelar.config(state='disabled')
-        botonActualizarLibro.config(state='disabled')
-        botonEliminar.config(state='disabled')
-        conserje()
-
-    def BuscarLibros():
-        
-        try:
-            libro = Libro(  
-                codigo.get()
-                            )
-            listar = libro.buscarLibro()
-                    
-            for l in listar:
-                nombre.set(l[1])
-                autor.set(l[2])
-                stock.set(l[3])
-                categoria.set(l[4])
-                editorial.set(l[5])
-                bodega.set(l[6])
-        except:
-            messagebox.showerror("Error", "No se pudo encontrar el libro.")
-            conserje() """
-
-
 """
-# Botones del frameTabla
-
-botonBuscar = Button(frameTabla, text='Buscar Libro', command=BuscarLibros)
-botonBuscar.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#158645', 
-    cursor='hand2', 
-    activebackground='#35BD6F')
-botonBuscar.grid(column=0, row=0, sticky="nwe", pady=5, padx=5)
-
-botonEditar = Button(frameTabla, text='Editar Libro', command=editar)
-botonEditar.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#158645', 
-    cursor='hand2', 
-    activebackground='#35BD6F')
-botonEditar.grid(column=1, row=0, sticky="nwe", pady=5, padx=5)
-
-botonActualizar = Button(
-    frameTabla, text='Actualizar Tabla', command=actualizar)
-botonActualizar.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#1658A2', 
-    cursor='hand2', 
-    activebackground='#3586DF')
-botonActualizar.grid(column=2, row=0, sticky="nwe", pady=5, padx=5)
-
-botonActualizarLibro = Button(
-    frameTabla, 
-    text='Actualizar Libro', 
-    command=editarLibro)
-botonActualizarLibro.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#1658A2', 
-    cursor='hand2', 
-    activebackground='#3586DF')
-botonActualizarLibro.grid(column=3, row=0, sticky="nwe", pady=5, padx=5)
-
-botonEliminar = Button(frameTabla, text="Eliminar Libro", command=eliminar)
-botonEliminar.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#BD152E', 
-    cursor='hand2', 
-    activebackground='#E15370')
-botonEliminar.grid(column=4, row=0, sticky="nwe", pady=5, padx=5)
-
-
-
-
-# Botones del Frame frmForm
-botonNuevo = Button(frm_menu_registro, text="Nuevo Registro", command=habilitar)
-botonNuevo.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#158645', 
-    cursor='hand2', 
-    activebackground='#35BD6F')
-botonNuevo.grid(column=0, row=7, sticky="w", pady=2, padx=5, columnspan=2)
-
-botonRegistrar = Button(frm_menu_registro, text="Registrar", command=registrar)
-botonRegistrar.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#1658A2', 
-    cursor='hand2', 
-    activebackground='#3586DF')
-botonRegistrar.grid(column=0, row=8, sticky="w", pady=2, padx=5)
-
-botonCancelar = Button(frm_menu_registro, text="Cancelar", command=desactivar)
-botonCancelar.config(
-    font=('Arial', 8, 'bold'), 
-    fg='#DAD5D6',
-    bg='#BD152E', 
-    cursor='hand2', 
-    activebackground='#E15370')
-botonCancelar.grid(column=1, row=8, sticky="w", pady=2, padx=5)
-
 # Frame para editar libros
 frameEditar = Frame(ventana_main)
 frmTituloEditar = Frame(frameEditar)
